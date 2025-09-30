@@ -47,13 +47,49 @@ i	code[i]	mode	ret
 // 내가 제시한 정답
 
 function solution(code) {
-  var answer = "";
-  for (i = 0; i < code; i++) {}
+  var answer = ""; // result 값
+  var mode = 0; // 값을 바꿀 mode
+  var codeArray = []; // code를 답을 배열
+  codeArray = code.split(""); // 입력받은 code를 split하여 codeArray에 삽입
 
-  return answer;
+  for (var i = 0; i < codeArray.length; i++) { // code의 길이 만큼 반복
+    if (codeArray[i] === "1") { // codeArray의 값이 "1" 일때
+      if (mode == 1) { // 만약 mode가 1이면
+        mode = 0; // 0으로 바꾼 뒤
+        continue; // 다음 루프로
+      }
+      if (mode == 0) { // mode가 0이면
+        mode = 1; // 1로 바뀐 뒤
+        continue; // 다음 루프로
+      }
+    }
+    if (mode == 0) { // mode가 0일 때
+      if (i % 2 == 0) { // 짝수의 값만
+        answer += codeArray[i]; // answer에 삽입
+      }
+    }
+    if (mode == 1) { // mode가 1이면
+      if (i % 2 != 0) { // 홀수의 값만
+        answer += codeArray[i]; // answer에 삽입
+      }
+    }
+  }
+
+  return answer.length ? answer : "EMPTY"; // answer의 값이 없으면 EMPTY, 있으면 answer값 리턴
 }
 
 // 코드 리뷰 때 인상 깊었던 코드
 
-// 가장 간결하고 이해하기 쉬운 코드를 가져올 것
-// 코드를 읽고 이해한 뒤 주석을 달아 설명을 작성할 것
+function solution(code) {
+  var answer = code
+    .replaceAll("1", "") // 1을 전부 지움
+    .split("") // 배열로 split
+    .filter((val, idx) => idx % 2 === 0) // idx가 2 즉 짝수의 값만 추출
+    .join(""); // 모든값을 join
+  return answer.length > 0 ? answer : "EMPTY"; // answer이 비어있다면 "EMPTY", 아닐경우 answer 리턴
+}
+
+// 1을 모두 지운 뒤 새 인덱스를 만들면 결국 모드
+// 1, 0을 하지 않고 1을 지운 새 인덱스의 짝수 값만 추출하면 되기 때문에
+// relpaceAll을 통해 1을 다 지운 뒤
+// 짝수의 값만 join하는 방법
