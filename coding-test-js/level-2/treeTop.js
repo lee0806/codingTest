@@ -25,45 +25,48 @@ n	wires	result
 // 내가 제시한 정답
 
 function solution(n, wires) {
-  // 1) 인접 리스트(graph) 만들기: graph[i] = i와 연결된 이웃들 목록
-  const graph = Array.from({ length: n + 1 }, () => []);
+  // 1) 인접 리스트(graph) 생성
+  const graph = Array.from({ length: n + 1 }, () => []); // 1부터 시작하기 때문에 n+1
   for (const [u, v] of wires) {
-    graph[u].push(v);
-    graph[v].push(u);
+    // wires를 순회하며 u, v 값 그래프에 추가 양방향 추가
+    graph[u].push(v); // u와 연결된 이웃 추가
+    graph[v].push(u); // v와 연결된 이웃 추가
   }
 
   // 2) (cutA, cutB) 간선을 "끊었다고 가정"하고 start에서 DFS로 연결된 노드 수 세기
   function countWithDFS(start, cutA, cutB) {
-    const visited = Array(n + 1).fill(false);
-    let count = 0;
+    const visited = Array(n + 1).fill(false); // 방문 기록 배열
+    let count = 0; // 연결된 노드 수
 
     function dfs(cur) {
-      visited[cur] = true;
-      count += 1;
+      visited[cur] = true; // 방문했을 때 해당 cur를 방문 처리
+      count += 1; // 연결된 노드 수 추가
 
       for (const next of graph[cur]) {
-        const isCut =
-          (cur === cutA && next === cutB) || (cur === cutB && next === cutA);
-        if (isCut) continue;
+        // cur의 이웃 노드를 순회
+        const isCut = // 끊어진 간선인지 확인
+          (cur === cutA && next === cutB) || (cur === cutB && next === cutA); // 끊어진 간선이면
+        if (isCut) continue; // 다음 이웃으로 넘어감
 
-        if (!visited[next]) dfs(next);
+        if (!visited[next]) dfs(next); // 방문하지 않았으면 next로 재귀함수 실행
       }
     }
 
-    dfs(start);
-    return count;
+    dfs(start); // 시작 노드부터 DFS 시작
+    return count; // 연결된 노드 수 반환
   }
 
-  let answer = Infinity;
+  let answer = 10000000; // 최소 차이값
 
   for (const [a, b] of wires) {
-    const sizeA = countWithDFS(a, a, b);
-    const sizeB = n - sizeA;
-    const diff = Math.abs(sizeA - sizeB);
-    if (diff < answer) answer = diff;
+    // 모든 간선을 끊어보면서
+    const sizeA = countWithDFS(a, a, b); // DFS로 끊어진 결과값
+    const sizeB = n - sizeA; // 전체 노드 수 - 끊어진 노드 수 = 나머지
+    const diff = Math.abs(sizeA - sizeB); // 차이의 절대값
+    if (diff < answer) answer = diff; // 최소 차이값 갱신
   }
 
-  return answer;
+  return answer; // 제출
 }
 
 // 모든 코드는 이해하고 주석을 달아서 설명할 것
@@ -71,6 +74,33 @@ function solution(n, wires) {
 // 이해하지 못할 경우 AI의 도움을 받아 코드를 작성하고 코드 리뷰를 진행 한 뒤 다시 문제를 풀어볼 것
 
 // 코드 리뷰 때 인상 깊었던 코드
+
+function solution(n, wires) {
+  const g = Array.from({ length: n }, () => []);
+  for (const e of wires) {
+    g[e[0] - 1].push(e[1] - 1);
+    g[e[1] - 1].push(e[0] - 1);
+  }
+  const p = new Array(n).fill(-1);
+  const q = [0];
+  for (let i = 0; i < q.length; ++i) {
+    const u = q[i];
+    for (const v of g[u])
+      if (v != p[u]) {
+        p[v] = u;
+        q.push(v);
+      }
+  }
+  let ans = n;
+  const dp = new Array(n).fill(1);
+  for (let i = q.length; --i > 0; ) {
+    const v = q[i];
+    dp[p[v]] += dp[v];
+    let a = Math.abs(n - 2 * dp[v]);
+    if (ans > a) ans = a;
+  }
+  return ans;
+}
 
 // 가장 간결하고 이해하기 쉬운 코드를 가져올 것
 // 코드를 읽고 이해한 뒤 주석을 달아 설명을 작성할 것
