@@ -26,9 +26,31 @@ n	result
 
 // 내가 제시한 정답
 
+// 방향만 잡는 템플릿 — 이대로 작성해 보세요
 function solution(n) {
-  var answer = [[]];
-  return answer;
+  const moves = [];
+
+  function hanoi(n, from, to, aux) {
+    // n개, from : 시작 뼈대, to : 도착 뼈대, aux : 중간 지점
+    // 1) 베이스
+    if (n === 1) {
+      // n이 1일 때
+      moves.push([from, to]); // 시작 점에서 3번으로 배열 push
+      return;
+    }
+
+    hanoi(n - 1, from, aux, to);
+
+    // 3) 가장 큰 1개: from -> to
+    moves.push([from, to]);
+
+    // 4) n-1개: aux -> to (from을 보조로 사용)
+    hanoi(n - 1, aux, to, from);
+  }
+
+  hanoi(n, 1, 3, 2);
+
+  return moves;
 }
 
 // 모든 코드는 이해하고 주석을 달아서 설명할 것
